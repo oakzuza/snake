@@ -1,0 +1,139 @@
+/<html>
+  <head>
+    <style>
+      body {
+        margin: 0px;
+        padding: 0px;
+      }
+    </style>
+  </head>
+  <body onkeydown="keyDown(event)">
+    <canvas id="myCanvas" width="600" height="600"></canvas>
+    <p><font face="impact" color="red" style="font-size:150%">TIME:</font>
+    <font id="time" face="impact" color="pink" style="font-size:150%">I</font></p>
+    </body>
+    <script type="text/javascript">
+
+      var canvas = document.getElementById('myCanvas');
+      var context = canvas.getContext('2d');
+      var d;
+      var array = [];
+      var setfood = {};
+      var LEFT  = 0;
+      var UP    = 1;
+      var RIGHT = 2;
+      var DOWN  = 3;
+      var KEY_LEFT  = 37;
+      var KEY_UP    = 38;
+      var KEY_RIGHT = 39;
+      var KEY_DOWN  = 40;
+
+  function keyDown(){
+    if(event.keyCode == 37 ){
+      snake.speedX = -1;
+      snake.speedY = 0;
+    }
+    if(event.keyCode == 39){
+      snake.speedX = 1;
+      snake.speedY = 0;
+    }
+    if(event.keyCode == 38){
+      snake.speedY = -1;
+      snake.speedX = 0; 
+    }
+    if(event.keyCode == 40){
+      snake.speedY = 1;
+      snake.speedX = 0; 
+    }
+}
+snake.speedY = 0;
+snake.speedX = 1;
+
+  function loop(){
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    move();
+    border();
+    food();
+    for(var i = 0; i < array.length; i++)
+      snake(array[i].x, array[i].y);
+  }
+  
+  function init(){
+      snake();
+      food();
+      score = 0;
+      for(var i = 0 ; i < 3; i++){
+        array.push({x: 1, y: 1});
+      } 
+  }
+  init();
+  game_loop = setInterval(loop, 60);
+  function border()
+  {
+    context.beginPath();
+    context.rect(0, 0, 600, 600);
+    context.fillStyle = 'black';
+    context.fill();
+    context.lineWidth = 7;
+    context.strokeStyle = 'red';
+    context.stroke();
+    }
+    border();
+  function food(x, y)
+  {
+    var radius = 7;
+      context.beginPath();
+      context.arc(setfood.x, setfood.y, radius, 0, 2 * Math.PI, false);
+      context.fillStyle = 'white';
+      context.fill();
+      context.lineWidth = 1;
+      context.strokeStyle = '#003300';
+      context.stroke();
+  }
+  function randomfood()
+  {
+      setfood.x = Math.random()*(canvas.width - 50) + 10;
+      setfood.y = Math.random()*(canvas.height - 50) + 10;
+  }
+  randomfood();
+  function snake(x, y)
+  {
+    context.beginPath();
+    context.rect(5 + 10 * x, 5 + 10 * y, 10 , 10);
+    context.fillStyle = 'white';
+    context.fill();
+    context.lineWidth = 1;
+    context.strokeStyle = 'white';
+    context.stroke();
+    speedX:  (100);
+    speedY:  (100);
+    heading: (90, 0);
+  }
+  function move(){
+    var nx = array[0].x;
+    var ny = array[0].y;
+    nx+= snake.speedX;
+    ny+= snake.speedY;
+    var tail = {x: nx, y: ny};
+      array.unshift(tail);
+      array.pop();
+
+     
+      //if ชนอาหาร
+      if(nx + 10 - setfood.x < 10 && nx + 10 - setfood.x > -10 && ny + 10 - setfood.y < 10 && ny + 10 - setfood.y > -10){
+      var tail = {x: nx, y: ny};
+      score++;
+      createfood();
+    }
+  }
+var I = null;
+var Z = 0;
+
+document.getElementById("time").innerHTML = "I";
+
+      setInterval(function(){
+        document.getElementById("time").innerHTML = (I += 1);
+      },1000);
+    </script>
+  </body>
+</html>      
