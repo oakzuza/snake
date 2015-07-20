@@ -1,139 +1,122 @@
-/<html>
-  <head>
-    <style>
-      body {
-        margin: 0px;
-        padding: 0px;
-      }
-    </style>
-  </head>
-  <body onkeydown="keyDown(event)">
-    <canvas id="myCanvas" width="600" height="600"></canvas>
-    <p><font face="impact" color="red" style="font-size:150%">TIME:</font>
-    <font id="time" face="impact" color="pink" style="font-size:150%">I</font></p>
-    </body>
-    <script type="text/javascript">
+<html>
+<head>
+	<title>oO~Crazy-Snake~Oo</title>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+</head>
+<body>
+	<center><font face="impact" color="orange" style="font-size:150%">This snake can make you crazy!!</font></center>
+	<center><canvas id="canvas" width="800" height="450"></canvas></center>
+	<center><font face="impact" color="Black" style="font-size:150%">TIME :</font>
+    <font id="time" face="impact" color="red" style="font-size:150%">I</font></center>
+    <font face="impact" color="red" style="font-size:150%">!! Warning ==> Don't Click Two Arrow !!</font>
+    <p><font face="impact" color="green" style="font-size:150%">->[ Left Arrow = Turn Left ] !!</font></p>
+    <p><font face="impact" color="yellow" style="font-size:150%">-->[ Up Arrow = Turn Up ] !!</font></p>
+    <p><font face="impact" color="blue" style="font-size:150%">--->[ Right Arrow = Turn Right ] !!</font></p>
+    <p><font face="impact" color="violet" style="font-size:150%">---->[ Down Arrow = Turn Down ] !!</font></p>
+	<script type="text/javascript">
+	$(document).ready(function(){
+	var canvas = $("#canvas")[0];
+	var ctx = canvas.getContext("2d");
+	var w = $("#canvas").width();	
+	var h = $("#canvas").height();
+	var cw = 10;
+	var I = 0;
+	var d;
+	var food;
+	var score;
+	var snake_array;
 
-      var canvas = document.getElementById('myCanvas');
-      var context = canvas.getContext('2d');
-      var d;
-      var array = [];
-      var setfood = {};
-      var LEFT  = 0;
-      var UP    = 1;
-      var RIGHT = 2;
-      var DOWN  = 3;
-      var KEY_LEFT  = 37;
-      var KEY_UP    = 38;
-      var KEY_RIGHT = 39;
-      var KEY_DOWN  = 40;
+	document.getElementById("time").innerHTML = I;
 
-  function keyDown(){
-    if(event.keyCode == 37 ){
-      snake.speedX = -1;
-      snake.speedY = 0;
-    }
-    if(event.keyCode == 39){
-      snake.speedX = 1;
-      snake.speedY = 0;
-    }
-    if(event.keyCode == 38){
-      snake.speedY = -1;
-      snake.speedX = 0; 
-    }
-    if(event.keyCode == 40){
-      snake.speedY = 1;
-      snake.speedX = 0; 
-    }
-}
-snake.speedY = 0;
-snake.speedX = 1;
-
-  function loop(){
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    move();
-    border();
-    food();
-    for(var i = 0; i < array.length; i++)
-      snake(array[i].x, array[i].y);
-  }
-  
-  function init(){
-      snake();
-      food();
-      score = 0;
-      for(var i = 0 ; i < 3; i++){
-        array.push({x: 1, y: 1});
-      } 
-  }
-  init();
-  game_loop = setInterval(loop, 60);
-  function border()
-  {
-    context.beginPath();
-    context.rect(0, 0, 600, 600);
-    context.fillStyle = 'black';
-    context.fill();
-    context.lineWidth = 7;
-    context.strokeStyle = 'red';
-    context.stroke();
-    }
-    border();
-  function food(x, y)
-  {
-    var radius = 7;
-      context.beginPath();
-      context.arc(setfood.x, setfood.y, radius, 0, 2 * Math.PI, false);
-      context.fillStyle = 'white';
-      context.fill();
-      context.lineWidth = 1;
-      context.strokeStyle = '#003300';
-      context.stroke();
-  }
-  function randomfood()
-  {
-      setfood.x = Math.random()*(canvas.width - 50) + 10;
-      setfood.y = Math.random()*(canvas.height - 50) + 10;
-  }
-  randomfood();
-  function snake(x, y)
-  {
-    context.beginPath();
-    context.rect(5 + 10 * x, 5 + 10 * y, 10 , 10);
-    context.fillStyle = 'white';
-    context.fill();
-    context.lineWidth = 1;
-    context.strokeStyle = 'white';
-    context.stroke();
-    speedX:  (100);
-    speedY:  (100);
-    heading: (90, 0);
-  }
-  function move(){
-    var nx = array[0].x;
-    var ny = array[0].y;
-    nx+= snake.speedX;
-    ny+= snake.speedY;
-    var tail = {x: nx, y: ny};
-      array.unshift(tail);
-      array.pop();
-
-     
-      //if ชนอาหาร
-      if(nx + 10 - setfood.x < 10 && nx + 10 - setfood.x > -10 && ny + 10 - setfood.y < 10 && ny + 10 - setfood.y > -10){
-      var tail = {x: nx, y: ny};
-      score++;
-      createfood();
-    }
-  }
-var I = null;
-var Z = 0;
-
-document.getElementById("time").innerHTML = "I";
-
-      setInterval(function(){
+	function init(){
+		d = "right";
+		create_snake();
+		create_food();
+		score = 0;
+		if(typeof game_loop != "undefined") clearInterval(game_loop);
+		game_loop = setInterval(paint, 60);
+		setInterval(function(){
         document.getElementById("time").innerHTML = (I += 1);
-      },1000);
-    </script>
-  </body>
-</html>      
+    	},1000);
+	}
+	init();
+	
+	function create_snake(){
+		var length = 5;
+		snake_array = [];
+		for(var i = length-1; i>=0; i--)
+		{
+			snake_array.push({x: i, y:0});
+		}
+	}
+	
+	function create_food(){
+		food = {
+			x: Math.round(Math.random()*(w-cw)/cw), 
+			y: Math.round(Math.random()*(h-cw)/cw), 
+		};
+	}
+	
+	function paint(){
+		ctx.fillStyle = "black";
+		ctx.fillRect(0, 0, w, h);
+		ctx.strokeStyle = "blue";
+		ctx.strokeRect(0, 0, w, h);
+
+		var nx = snake_array[0].x;
+		var ny = snake_array[0].y;
+		if(d == "right") nx++;
+		else if(d == "left") nx--;
+		else if(d == "up") ny--;
+		else if(d == "down") ny++;
+
+		if(nx == -1 || nx == w/cw || ny == -1 || ny == h/cw || check_collision(nx, ny, snake_array)){
+			init(); //restart
+			return;
+		}
+		
+		if(nx == food.x && ny == food.y){
+			var tail = {x: nx, y: ny};
+			score++;
+			create_food();
+		}else{
+			var tail = snake_array.pop();
+			tail.x = nx; tail.y = ny;
+		}
+		
+		snake_array.unshift(tail);
+		
+		for(var i = 0; i < snake_array.length; i++){
+			var c = snake_array[i];
+			paint_cell(c.x, c.y);
+		}
+		paint_cell(food.x, food.y);
+		var score_text = "Your Points: " + score;
+		ctx.fillText(score_text, 5, h-5);
+	}
+
+	function paint_cell(x, y){
+		ctx.fillStyle = "white";
+		ctx.fillRect(x*cw, y*cw, cw, cw);
+		ctx.strokeStyle = "white";
+		ctx.strokeRect(x*cw, y*cw, cw, cw);
+	}
+	
+	function check_collision(x, y, array){
+		for(var i = 0; i < array.length; i++){
+			if(array[i].x == x && array[i].y == y)
+			 return true;
+		}
+		return false;
+	}
+	$(document).keydown(function(e){
+		var key = e.which;
+		if(key == "37" && d != "right") d = "left";
+		else if(key == "38" && d != "down") d = "up";
+		else if(key == "39" && d != "left") d = "right";
+		else if(key == "40" && d != "up") d = "down";
+	})	
+})
+</script>
+</body>
+</html>
